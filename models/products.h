@@ -1,6 +1,7 @@
 #ifndef ONLINE_SHOP_PRODUCTS_H
 #define ONLINE_SHOP_PRODUCTS_H
 #include <string>
+using namespace std;
 class products
 {
 public:
