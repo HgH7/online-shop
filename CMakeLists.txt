@@ -7,4 +7,5 @@ add_executable(online_shop main.cpp
         DS/Trees.cpp
         DS/deliveryqueue.h
         DS/deliveryqueue.cpp
+        DS/SLL.cpp
 )
