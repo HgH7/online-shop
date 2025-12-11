@@ -1,30 +1,21 @@
-//
-// Created by Hassan Elsayed on 26/11/2025.
-//
+#ifndef ORDER_H
+#define ORDER_H
 
-#ifndef ONLINE_SHOP_ORDERS_H
-#define ONLINE_SHOP_ORDERS_H
 #include <string>
 using namespace std;
-class Order{
+
+class Order {
 public:
     int orderID;
-    string customername;
-    string productsname;
-    int quantity;
+    int customerID;
+    int productID;
+    double total;
+    string date;
 
+    Order() {}
 
-
-
-
-
-    Order(int Orderid,string Customername,string Productsname,int Quantity):
-    orderID(Orderid),customername(Customername),productsname(Productsname),quantity(Quantity){}
-
-
-
-
-
-
+    Order(int orderID, int customerID, int productID, double total, string date)
+        : orderID(orderID), customerID(customerID), productID(productID), total(total), date(date) {}
 };
-#endif //ONLINE_SHOP_ORDERS_H
+
+#endif
