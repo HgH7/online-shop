@@ -1,10 +1,10 @@
-#ifndef CUSTOMER_H
-#define CUSTOMER_H
+#ifndef MODELS_CUSTOMER_H
+#define MODELS_CUSTOMER_H
 
 #include <string>
 using namespace std;
 
-class Customer {
+class customer {
 public:
     int id;
     string name;
@@ -12,10 +12,9 @@ public:
     string phone;
     string address;
 
-    Customer(int id, string name, string email, string phone, string address)
-        : id(id), name(name), email(email), phone(phone), address(address) {}
+    customer* next;
 
-    Customer() {}
+    customer(int Id, string Name, string Email, string Phone, string Address);
 };
 
 #endif

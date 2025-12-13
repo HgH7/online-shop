@@ -1,21 +1,28 @@
-//
-// Created by Hassan Elsayed on 06/12/2025.
-//
 #ifndef ONLINE_SHOP_DELIVERYQUEUE_H
 #define ONLINE_SHOP_DELIVERYQUEUE_H
+//DS/deliveryqueue.h
 #include "../models/orders.h"
-#include <string>
-#include <queue>
+using namespace std;
 
-class DeliveryQueue
-{
-private :
-queue<Order> deliveries;
+class DeliveryNode {
+public:
+    Order order;
+    DeliveryNode* next;
 
+    DeliveryNode(Order order);
+};
 
+class DeliveryQueue {
+private:
+    DeliveryNode* front;
+    DeliveryNode* rear;
 
 public:
-    void enqueueDelivery(Order& order );
-    void dequeueDelivery();
+    DeliveryQueue();
+
+    void enqueueDelivery(Order order);
+    Order dequeueDelivery();
+    bool isEmpty();
 };
-#endif //ONLINE_SHOP_DELIVERYQUEUE_H
+
+#endif

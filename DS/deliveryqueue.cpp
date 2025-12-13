@@ -1,32 +1,49 @@
-//
-// Created by Hassan Elsayed on 06/12/2025.
-//
-#include "../DS/deliveryqueue.h"
-#include "../models/orders.h"
+#include "deliveryqueue.h"
 #include <iostream>
-#include <string>
-#include <queue>
+//DS/deliveryqueue.cpp
 using namespace std;
 
-DeliveryQueue::enqueueDelivery(Order& order){
-    deliveries.push(order);
-
-
-
+// Node constructor
+DeliveryNode::DeliveryNode(Order o) {
+    order = o;
+    next = nullptr;
 }
 
+// Queue constructor
+DeliveryQueue::DeliveryQueue() {
+    front = nullptr;
+    rear = nullptr;
+}
 
+void DeliveryQueue::enqueueDelivery(Order order) {
+    DeliveryNode* newNode = new DeliveryNode(order);
 
+    if (rear == nullptr) {
+        front = rear = newNode;
+        return;
+    }
 
+    rear->next = newNode;
+    rear = newNode;
+}
 
-DeliveryQueue::dequeueDelivery(){
-    if (deliveries.empty()){
+Order DeliveryQueue::dequeueDelivery() {
+    if (front == nullptr) {
+        cout << "No deliveries to process." << endl;
         return Order();
     }
-    Order next = deliveries.front();
-    deliveries.pop();
-    return next;
 
+    DeliveryNode* temp = front;
+    Order data = front->order;
 
+    front = front->next;
+    if (front == nullptr)
+        rear = nullptr;
 
+    delete temp;
+    return data;
+}
+
+bool DeliveryQueue::isEmpty() {
+    return front == nullptr;
 }
