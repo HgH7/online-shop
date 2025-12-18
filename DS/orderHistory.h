@@ -1,9 +1,3 @@
-//
-// Created by Hassan Elsayed on 13/12/2025.
-//
-
-#ifndef ONLINE_SHOP_ORDERHISTORY_H
-#define ONLINE_SHOP_ORDERHISTORY_H
 #ifndef DS_ORDERHISTORY_H
 #define DS_ORDERHISTORY_H
 
@@ -31,5 +25,3 @@ public:
 };
 
 #endif
-
-#endif //ONLINE_SHOP_ORDERHISTORY_H

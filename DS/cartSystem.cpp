@@ -28,3 +28,14 @@ void ReturnStack::processReturn() {
     string item = items[top--];
     cout << "Processing return item: " << item << endl;
 }
+void ReturnStack::displayCart() {
+    if (top == -1) {
+        cout << "Cart is empty.\n";
+        return;
+    }
+
+    cout << "\n--- Cart Items ---\n";
+    for (int i = top; i >= 0; i--) {
+        cout << items[i] << endl;
+    }
+}

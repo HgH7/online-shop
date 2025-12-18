@@ -1,6 +1,7 @@
 #include "products.h"
-//Ds/products.cpp
-// -------- products constructor --------
+#include <iostream>
+using namespace std;
+
 products::products(int Id, int Stock, string Name, string Category, double Price) {
     id = Id;
     stock = Stock;
@@ -11,12 +12,10 @@ products::products(int Id, int Stock, string Name, string Category, double Price
     right = nullptr;
 }
 
-// -------- ProductCatalog constructor --------
 ProductCatalog::ProductCatalog() {
     root = nullptr;
 }
 
-// -------- ITERATIVE ADD PRODUCT --------
 void ProductCatalog::addProduct(int id, int stock, string name, string category, double price) {
     products* newNode = new products(id, stock, name, category, price);
 
@@ -30,13 +29,10 @@ void ProductCatalog::addProduct(int id, int stock, string name, string category,
 
     while (current != nullptr) {
         parent = current;
-
         if (id < current->id)
             current = current->left;
-        else if (id > current->id)
-            current = current->right;
         else
-            return; // duplicate id, do nothing
+            current = current->right;
     }
 
     if (id < parent->id)
@@ -45,90 +41,50 @@ void ProductCatalog::addProduct(int id, int stock, string name, string category,
         parent->right = newNode;
 }
 
-// -------- ITERATIVE SEARCH PRODUCT --------
 products* ProductCatalog::searchProduct(int id) {
     products* current = root;
 
     while (current != nullptr) {
         if (id == current->id)
             return current;
-
         if (id < current->id)
             current = current->left;
         else
             current = current->right;
     }
-
     return nullptr;
 }
 
-// -------- ITERATIVE REMOVE PRODUCT --------
-void ProductCatalog::removeProduct(int id) {
-    products* current = root;
-    products* parent = nullptr;
+products* ProductCatalog::getRoot() {
+    return root;
+}
 
-    // find the node
-    while (current != nullptr && current->id != id) {
-        parent = current;
-
-        if (id < current->id)
-            current = current->left;
-        else
-            current = current->right;
-    }
-
-    if (current == nullptr)
-        return; // not found
-
-    // CASE 1: no children
-    if (current->left == nullptr && current->right == nullptr) {
-        if (parent == nullptr)
-            root = nullptr;
-        else if (parent->left == current)
-            parent->left = nullptr;
-        else
-            parent->right = nullptr;
-
-        delete current;
+void ProductCatalog::displayByCategory(products* node, string category) {
+    if (node == nullptr)
         return;
+
+    displayByCategory(node->left, category);
+
+    if (node->category == category) {
+        cout << node->id << " - " << node->name << " - " << node->price << endl;
     }
 
-    // CASE 2: one child
-    if (current->left == nullptr || current->right == nullptr) {
-        products* child = (current->left != nullptr) ? current->left : current->right;
+    displayByCategory(node->right, category);
+}
 
-        if (parent == nullptr)
-            root = child;
-        else if (parent->left == current)
-            parent->left = child;
-        else
-            parent->right = child;
+void ProductCatalog::showProductsByCategory(string category) {
+    displayByCategory(root, category);
+}
 
-        delete current;
+void ProductCatalog::displayCategories(products* node) {
+    if (node == nullptr)
         return;
-    }
 
-    // CASE 3: two children – find successor (smallest in right subtree)
-    products* successor = current->right;
-    products* successorParent = current;
+    displayCategories(node->left);
+    cout << node->category << endl;
+    displayCategories(node->right);
+}
 
-    while (successor->left != nullptr) {
-        successorParent = successor;
-        successor = successor->left;
-    }
-
-    // copy successor data
-    current->id = successor->id;
-    current->name = successor->name;
-    current->category = successor->category;
-    current->price = successor->price;
-    current->stock = successor->stock;
-
-    // delete successor node
-    if (successorParent->left == successor)
-        successorParent->left = successor->right;
-    else
-        successorParent->right = successor->right;
-
-    delete successor;
+void ProductCatalog::showAllCategories() {
+    displayCategories(root);
 }

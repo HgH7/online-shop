@@ -1,6 +1,3 @@
-//
-// Created by Hassan Elsayed on 13/12/2025.
-//
 #include "orderHistory.h"
 #include <iostream>
 using namespace std;
@@ -30,16 +27,16 @@ void OrderHistory::addOrder(Order order) {
 }
 
 void OrderHistory::viewOrders(int customerID) {
-    OrderNode* current = head;
+    OrderNode* temp = head;
 
-    while (current != nullptr) {
-        if (current->order.customerID == customerID) {
-            cout << "Order ID: " << current->order.orderID << endl;
-            cout << "Product ID: " << current->order.productID << endl;
-            cout << "Total: " << current->order.total << endl;
-            cout << "Date: " << current->order.date << endl;
-            cout << "-------------------------" << endl;
+    while (temp != nullptr) {
+        if (temp->order.customerID == customerID) {
+            cout << "Order ID: " << temp->order.orderID << endl;
+            cout << "Product ID: " << temp->order.productID << endl;
+            cout << "Total: " << temp->order.total << endl;
+            cout << "Date: " << temp->order.date << endl;
+            cout << "---------------------" << endl;
         }
-        current = current->next;
+        temp = temp->next;
     }
 }

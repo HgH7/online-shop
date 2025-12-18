@@ -1,6 +1,6 @@
 #ifndef ORDER_H
 #define ORDER_H
-//orders.h
+
 #include <string>
 using namespace std;
 
@@ -14,8 +14,13 @@ public:
 
     Order() {}
 
-    Order(int orderID, int customerID, int productID, double total, string date)
-        : orderID(orderID), customerID(customerID), productID(productID), total(total), date(date) {}
+    Order(int oID, int cID, int pID, double t, string d) {
+        orderID = oID;
+        customerID = cID;
+        productID = pID;
+        total = t;
+        date = d;
+    }
 };
 
 #endif

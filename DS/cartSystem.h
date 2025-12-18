@@ -14,6 +14,8 @@ public:
 
     void pushReturn(string item);
     void processReturn();
+
+    void displayCart();
 };
 
 #endif
