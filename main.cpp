@@ -92,37 +92,124 @@ int main() {
         // ===========================
         // 1. BROWSE PRODUCTS
         // ===========================
+       // ===========================
+// 1. BROWSE PRODUCTS
+// ===========================
         if (choice == 1) {
-            cout << "\n=== Products (Sorted by Price) ===\n";
-            inorderSortByPrice(catalog.getRoot());
+            while (true) {
+                cout << "\n=== Products (Sorted by Price from low to high) ===\n";
+                sortAndDisplayByPrice(catalog.getRoot());
 
-            cout << "\nEnter product ID to add to cart (0 to go back): ";
-            int id;
-            cin >> id;
+                cout << "\n1. Add product to cart by ID\n";
+                cout << "2. Search for product by ID\n";
+                cout << "3. Back\n";
+                cout << "Choose: ";
 
-            if (id == 0) continue;
+                int browseChoice;
+                cin >> browseChoice;
 
-            products* product = catalog.searchProduct(id);
-            if (!product) {
-                cout << "Product not found.\n";
-                continue;
+                // ---- ADD TO CART ----
+                if (browseChoice == 1) {
+                    int id;
+                    cout << "Enter product ID (0 to cancel): ";
+                    cin >> id;
+
+                    if (id == 0) continue;
+
+                    products* product = catalog.searchProduct(id);
+                    if (!product) {
+                        cout << "❌ Product not found.\n";
+                        continue;
+                    }
+
+                    int qty;
+                    cout << "Enter quantity: ";
+                    cin >> qty;
+
+                    if (qty <= 0 || qty > product->stock) {
+                        cout << "❌ Invalid quantity.\n";
+                        continue;
+                    }
+
+                    for (int i = 0; i < qty; i++) {
+                        cart.pushReturn(product->name, product->price, 1);
+                    }
+
+                    cout << "✓ Added to cart\n";
+                }
+
+                // ---- SEARCH PRODUCT ----
+                // ---- SEARCH PRODUCT BY NAME ----
+                else if (browseChoice == 2) {
+                    cin.ignore();  // clear newline
+                    string name;
+                    cout << "Enter product name to search (or '0' to cancel): ";
+                    getline(cin, name);
+
+                    if (name == "0") continue;
+
+                    products* product = searchProductByName(catalog.getRoot(), name);
+                    if (!product) {
+                        cout << "❌ Product not found.\n";
+                        continue;
+                    }
+
+                    // Show ONLY the searched product
+                    cout << "\n=== Product Found ===\n";
+                    cout << "ID: " << product->id
+                        << "\nName: " << product->name
+                        << "\nCategory: " << product->category
+                        << "\nPrice: " << product->price
+                        << "\nStock: " << product->stock << endl;
+
+                    // Sub-menu
+                    while (true) {
+                        cout << "\n1. Add to cart\n";
+                        cout << "2. Back\n";
+                        cout << "Choose: ";
+
+                        int searchChoice;
+                        cin >> searchChoice;
+
+                        if (searchChoice == 1) {
+                            int qty;
+                            cout << "Enter quantity: ";
+                            cin >> qty;
+
+                            if (qty <= 0 || qty > product->stock) {
+                                cout << "❌ Invalid quantity.\n";
+                                continue;
+                            }
+
+                            for (int i = 0; i < qty; i++) {
+                                cart.pushReturn(product->name, product->price, 1);
+                            }
+
+                            cout << "✓ Added to cart\n";
+                            break;  // go back to browse menu
+                        }
+                        else if (searchChoice == 2) {
+                            break;  // back to browse menu
+                        }
+                        else {
+                            cout << "Invalid choice\n";
+                        }
+                    }
+                }
+
+
+
+                // ---- BACK ----
+                else if (browseChoice == 3) {
+                    break;
+                }
+
+                else {
+                    cout << "Invalid choice\n";
+                }
             }
-
-            cout << "Enter quantity: ";
-            int qty;
-            cin >> qty;
-
-            if (qty <= 0 || qty > product->stock) {
-                cout << "Invalid quantity.\n";
-                continue;
-            }
-
-            for (int i = 0; i < qty; i++) {
-                cart.pushReturn(product->name, product->price, 1);
-            }
-
-            cout << "✓ Added to cart\n";
         }
+
 
         // ===========================
         // 2. CART & CHECKOUT

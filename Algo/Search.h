@@ -19,6 +19,21 @@ customer* linearSearchCustomer(customer* head, int id)
     }
     return nullptr;
 }
+// Search product by name (linear search on BST)
+products* searchProductByName(products* root, const string& name) {
+    if (!root) return nullptr;
+
+    // Check current node
+    if (root->name == name)
+        return root;
+
+    // Search left subtree
+    products* leftResult = searchProductByName(root->left, name);
+    if (leftResult) return leftResult;
+
+    // Search right subtree
+    return searchProductByName(root->right, name);
+}
 
 #endif
 
