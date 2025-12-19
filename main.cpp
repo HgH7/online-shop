@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <limits>
 #include <string>
+#include <algorithm> 
 
 #include "./DS/products.h"
 #include "./DS/customerAcc.h"
@@ -44,6 +45,9 @@ int main() {
 // FUNCTION IMPLEMENTATIONS
 // ==========================
 
+
+
+
 int getIntInput(const string& prompt, int min, int max) {
     int value;
     while (true) {
@@ -75,6 +79,8 @@ double getDoubleInput(const string& prompt, double min) {
         }
     }
 }
+
+
 
 string getStringInput(const string& prompt, bool allowEmpty) {
     string input;
@@ -144,9 +150,12 @@ void seedProducts(ProductCatalog& catalog) {
 // ==========================
 // BROWSE PRODUCTS
 // ==========================
+// ==========================
+// BROWSE PRODUCTS
+// ==========================
 void browseProducts(ProductCatalog& catalog, ReturnStack& cart) {
-    while(true) {
-        cout << "\n🛍️  ===== PRODUCTS (Sorted by Price) ===== 🛍️\n";
+    while (true) {
+        cout << "\n🛍️  ===== PRODUCTS (Sorted by Price from low to high) ===== 🛍️\n";
         cout << "---------------------------------------------------------------\n";
         sortAndDisplayByPrice(catalog.getRoot());
         cout << "---------------------------------------------------------------\n";
@@ -157,39 +166,67 @@ void browseProducts(ProductCatalog& catalog, ReturnStack& cart) {
 
         int browseChoice = getIntInput("Choose: ", 1, 3);
 
-        if(browseChoice == 1) {
+        if (browseChoice == 1) {
             int id = getIntInput("Enter product ID (0 to cancel): ");
-            if(id == 0) continue;
+            if (id == 0) continue;
 
             products* product = catalog.searchProduct(id);
-            if(!product) { cout << "❌ Product not found.\n"; continue; }
+            if (!product) {
+                cout << "❌ Product not found.\n";
+                continue;
+            }
 
             int qty = getIntInput("Enter quantity: ", 1, product->stock);
-            for(int i=0; i<qty; i++) cart.pushReturn(product->name, product->price, 1);
-            cout << "✅ Added to cart\n";
+            for (int i = 0; i < qty; i++) cart.pushReturn(product->name, product->price, 1);
+            cout << "✅ Added to cart successfully!\n";
+
+            // Show options after successful addition
+            cout << "\nWhat would you like to do next?\n";
+            cout << "1️⃣  Continue browsing products\n";
+            cout << "2️⃣  Return to main menu\n";
+
+            int afterAddChoice = getIntInput("Choose: ", 1, 2);
+            if (afterAddChoice == 2) {
+                return; // Return to main menu
+            }
+            // If choice is 1, the loop continues and shows products again
         }
-        else if(browseChoice == 2) {
+        else if (browseChoice == 2) {
             string name = getStringInput("Enter product name (0 to cancel): ");
-            if(name == "0") continue;
+            if (name == "0") continue;
 
             products* product = searchProductByName(catalog.getRoot(), name);
-            if(!product) { cout << "❌ Product not found.\n"; continue; }
+            if (!product) {
+                cout << "❌ Product not found.\n";
+                continue;
+            }
 
             cout << "\n--- Product Details ---\n";
             cout << "ID: " << product->id
-                 << "\nName: " << product->name
-                 << "\nCategory: " << product->category
-                 << "\nPrice: " << product->price
-                 << "\nStock: " << product->stock << endl;
+                << "\nName: " << product->name
+                << "\nCategory: " << product->category
+                << "\nPrice: " << product->price
+                << "\nStock: " << product->stock << endl;
 
             int searchChoice = getIntInput("\n1. Add to cart\n2. Back\nChoose: ", 1, 2);
-            if(searchChoice == 1) {
+            if (searchChoice == 1) {
                 int qty = getIntInput("Enter quantity: ", 1, product->stock);
-                for(int i=0; i<qty; i++) cart.pushReturn(product->name, product->price, 1);
-                cout << "✅ Added to cart\n";
+                for (int i = 0; i < qty; i++) cart.pushReturn(product->name, product->price, 1);
+                cout << "✅ Added to cart successfully!\n";
+
+                // Show options after successful addition
+                cout << "\nWhat would you like to do next?\n";
+                cout << "1️⃣  Continue browsing products\n";
+                cout << "2️⃣  Return to main menu\n";
+
+                int afterAddChoice = getIntInput("Choose: ", 1, 2);
+                if (afterAddChoice == 2) {
+                    return; // Return to main menu
+                }
+                // If choice is 1, the loop continues and shows products again
             }
         }
-        else break;
+        else break; // User chose "3. Back" from main browsing menu
     }
 }
 
@@ -299,7 +336,7 @@ void runShopSystem() {
         cout << "======================================\n";
 
         int choice = getIntInput("Choose: ", 1, 5);
-
+        cout << "\n"<<endl;
         switch(choice) {
             case 1: browseProducts(catalog, cart); break;
             case 2: viewCartCheckout(cart, customers, orderHistory, deliveryQueue, orderCounter); break;

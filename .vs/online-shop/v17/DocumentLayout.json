@@ -74,7 +74,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
@@ -84,7 +84,7 @@
               "RelativeDocumentMoniker": "Algo\\Sort.h",
               "ToolTip": "C:\\Users\\welwe\\source\\repos\\HgH7\\online-shop\\Algo\\Sort.h",
               "RelativeToolTip": "Algo\\Sort.h",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAUwDIAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAUwCwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-12-18T21:33:26.077Z",
               "IsPinned": true,
@@ -105,19 +105,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "main.cpp",
-              "DocumentMoniker": "C:\\Users\\welwe\\source\\repos\\HgH7\\online-shop\\main.cpp",
-              "RelativeDocumentMoniker": "main.cpp",
-              "ToolTip": "C:\\Users\\welwe\\source\\repos\\HgH7\\online-shop\\main.cpp",
-              "RelativeToolTip": "main.cpp",
-              "ViewState": "AgIAAKEAAAAAAAAAAAAqwMYAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-12-18T22:27:38.008Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 15,
               "Title": "deliveryqueue.cpp",
               "DocumentMoniker": "C:\\Users\\welwe\\source\\repos\\HgH7\\online-shop\\DS\\deliveryqueue.cpp",
@@ -131,13 +118,26 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\welwe\\source\\repos\\HgH7\\online-shop\\main.cpp",
+              "RelativeDocumentMoniker": "main.cpp",
+              "ToolTip": "C:\\Users\\welwe\\source\\repos\\HgH7\\online-shop\\main.cpp",
+              "RelativeToolTip": "main.cpp",
+              "ViewState": "AgIAAMEAAAAAAAAAAAAqwOYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-12-18T22:27:38.008Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Search.h",
               "DocumentMoniker": "C:\\Users\\welwe\\source\\repos\\HgH7\\online-shop\\Algo\\Search.h",
               "RelativeDocumentMoniker": "Algo\\Search.h",
               "ToolTip": "C:\\Users\\welwe\\source\\repos\\HgH7\\online-shop\\Algo\\Search.h",
               "RelativeToolTip": "Algo\\Search.h",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAACQAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAUwDMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-12-18T21:47:47.675Z",
               "EditorCaption": ""
