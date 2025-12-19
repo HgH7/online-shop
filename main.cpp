@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <limits>
+#include <string>
 
 #include "./DS/products.h"
 #include "./DS/customerAcc.h"
@@ -11,6 +12,82 @@
 #include "./Algo/Sort.h"
 
 using namespace std;
+
+// ==========================
+// FUNCTION PROTOTYPES
+// ==========================
+int getIntInput(const string& prompt, int min = INT_MIN, int max = INT_MAX);
+double getDoubleInput(const string& prompt, double min = 0);
+string getStringInput(const string& prompt, bool allowEmpty=false);
+
+void seedProducts(ProductCatalog& catalog);
+void browseProducts(ProductCatalog& catalog, ReturnStack& cart);
+void viewCartCheckout(ReturnStack& cart, CustomerList& customers, OrderHistory& orderHistory, DeliveryQueue& deliveryQueue, int& orderCounter);
+void viewProfile(CustomerList& customers, OrderHistory& orderHistory);
+void adminPanel(ProductCatalog& catalog, DeliveryQueue& deliveryQueue);
+void runShopSystem();
+
+// ==========================
+// MAIN FUNCTION
+// ==========================
+int main() {
+    cout << "======================================\n";
+    cout << "    🛒 WELCOME TO THE NILE STORE 🛒\n";
+    cout << "======================================\n";
+    runShopSystem();
+
+    cout << "\nThank you for shopping with us! Come back soon!\n";
+    return 0;
+}
+
+// ==========================
+// FUNCTION IMPLEMENTATIONS
+// ==========================
+
+int getIntInput(const string& prompt, int min, int max) {
+    int value;
+    while (true) {
+        cout << prompt;
+        cin >> value;
+        if(cin.fail() || value < min || value > max) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "❌ Invalid input. Try again.\n";
+        } else {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return value;
+        }
+    }
+}
+
+double getDoubleInput(const string& prompt, double min) {
+    double value;
+    while (true) {
+        cout << prompt;
+        cin >> value;
+        if(cin.fail() || value < min) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "❌ Invalid input. Try again.\n";
+        } else {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return value;
+        }
+    }
+}
+
+string getStringInput(const string& prompt, bool allowEmpty) {
+    string input;
+    while (true) {
+        cout << prompt;
+        getline(cin, input);
+        if (!allowEmpty && input.empty()) {
+            cout << "❌ Input cannot be empty.\n";
+            continue;
+        }
+        return input;
+    }
+}
 
 void seedProducts(ProductCatalog& catalog) {
     catalog.addProduct(1, 15, "Laptop", "Electronics", 15000);
@@ -62,309 +139,173 @@ void seedProducts(ProductCatalog& catalog) {
     catalog.addProduct(38, 14, "Pet Food", "Pet Supplies", 650);
     catalog.addProduct(39, 8,  "Water Bottle", "Outdoor", 220);
     catalog.addProduct(40, 6,  "Camping Tent", "Outdoor Gear", 4800);
-
 }
 
-int main() {
+// ==========================
+// BROWSE PRODUCTS
+// ==========================
+void browseProducts(ProductCatalog& catalog, ReturnStack& cart) {
+    while(true) {
+        cout << "\n🛍️  ===== PRODUCTS (Sorted by Price) ===== 🛍️\n";
+        cout << "---------------------------------------------------------------\n";
+        sortAndDisplayByPrice(catalog.getRoot());
+        cout << "---------------------------------------------------------------\n";
+
+        cout << "\n1️⃣  Add product to cart by ID\n";
+        cout << "2️⃣  Search product by Name\n";
+        cout << "3️⃣  Back\n";
+
+        int browseChoice = getIntInput("Choose: ", 1, 3);
+
+        if(browseChoice == 1) {
+            int id = getIntInput("Enter product ID (0 to cancel): ");
+            if(id == 0) continue;
+
+            products* product = catalog.searchProduct(id);
+            if(!product) { cout << "❌ Product not found.\n"; continue; }
+
+            int qty = getIntInput("Enter quantity: ", 1, product->stock);
+            for(int i=0; i<qty; i++) cart.pushReturn(product->name, product->price, 1);
+            cout << "✅ Added to cart\n";
+        }
+        else if(browseChoice == 2) {
+            string name = getStringInput("Enter product name (0 to cancel): ");
+            if(name == "0") continue;
+
+            products* product = searchProductByName(catalog.getRoot(), name);
+            if(!product) { cout << "❌ Product not found.\n"; continue; }
+
+            cout << "\n--- Product Details ---\n";
+            cout << "ID: " << product->id
+                 << "\nName: " << product->name
+                 << "\nCategory: " << product->category
+                 << "\nPrice: " << product->price
+                 << "\nStock: " << product->stock << endl;
+
+            int searchChoice = getIntInput("\n1. Add to cart\n2. Back\nChoose: ", 1, 2);
+            if(searchChoice == 1) {
+                int qty = getIntInput("Enter quantity: ", 1, product->stock);
+                for(int i=0; i<qty; i++) cart.pushReturn(product->name, product->price, 1);
+                cout << "✅ Added to cart\n";
+            }
+        }
+        else break;
+    }
+}
+
+// ==========================
+// VIEW CART & CHECKOUT
+// ==========================
+void viewCartCheckout(ReturnStack& cart, CustomerList& customers, OrderHistory& orderHistory, DeliveryQueue& deliveryQueue, int& orderCounter) {
+    if(cart.top == -1) {
+        cout << "🛒 Cart is empty.\n";
+        return;
+    }
+
+    cout << "\n🛒 ===== YOUR CART ===== 🛒\n";
+    cart.displayCart();
+    cout << "\n1️⃣  Remove last item\n2️⃣  Checkout\n3️⃣  Back\n";
+
+    int cartChoice = getIntInput("Choose: ", 1, 3);
+    if(cartChoice == 1) cart.processReturn();
+    else if(cartChoice == 2) {
+        if(cart.top == -1) { cout << "Cart empty. Checkout cancelled.\n"; return; }
+
+        int id = getIntInput("Customer ID: ");
+        string name = getStringInput("Name: ");
+        string email = getStringInput("Email: ");
+        string phone = getStringInput("Phone: ");
+        string address = getStringInput("Address: ");
+
+        customers.addCustomer(id, name, email, phone, address);
+
+        double total = cart.calculateTotal();
+
+        Order order(orderCounter++, id, 0, total, "Today");
+        orderHistory.addOrder(order);
+        deliveryQueue.enqueueDelivery(order);
+
+        cout << "✅ Order placed. Total = " << total << " EGP\n";
+    }
+}
+
+// ==========================
+// VIEW PROFILE
+// ==========================
+void viewProfile(CustomerList& customers, OrderHistory& orderHistory) {
+    int id = getIntInput("Customer ID: ");
+    customer* c = linearSearchCustomer(customers.getHead(), id);
+    if(!c) { cout << "❌ Customer not found.\n"; return; }
+
+    cout << "\n--- Profile ---\n";
+    cout << "Name: " << c->name
+         << "\nEmail: " << c->email
+         << "\nPhone: " << c->phone
+         << "\nAddress: " << c->address << endl;
+
+    cout << "\n--- Order History ---\n";
+    orderHistory.viewOrders(id);
+}
+
+// ==========================
+// ADMIN PANEL
+// ==========================
+void adminPanel(ProductCatalog& catalog, DeliveryQueue& deliveryQueue) {
+    int password = getIntInput("\nEnter admin password: ");
+    if(password != 1234) { cout << "❌ Access denied!\n"; return; }
+
+    while(true) {
+        cout << "\n===== ADMIN PANEL =====\n";
+        cout << "1️⃣  Add Product\n";
+        cout << "2️⃣  Process Next Delivery\n";
+        cout << "3️⃣  Back to Main Menu\n";
+
+        int adminChoice = getIntInput("Choose: ", 1, 3);
+
+        if(adminChoice == 1) {
+            int id = getIntInput("Product ID: ");
+            string name = getStringInput("Name: ");
+            string category = getStringInput("Category: ");
+            double price = getDoubleInput("Price: ", 0);
+            int stock = getIntInput("Stock: ", 0);
+
+            catalog.addProduct(id, stock, name, category, price);
+            cout << "✅ Product added successfully\n";
+        }
+        else if(adminChoice == 2) deliveryQueue.dequeueDelivery();
+        else break;
+    }
+}
+
+// ==========================
+// RUN SHOP SYSTEM
+// ==========================
+void runShopSystem() {
     ProductCatalog catalog;
     CustomerList customers;
     OrderHistory orderHistory;
     DeliveryQueue deliveryQueue;
     ReturnStack cart(10);
+    int orderCounter = 1;
 
     seedProducts(catalog);
 
-    int choice;
-    int orderCounter = 1;
+    while(true) {
+        cout << "1️⃣  Browse Products\n";
+        cout << "2️⃣  View Cart & Checkout\n";
+        cout << "3️⃣  View Profile\n";
+        cout << "4️⃣  Admin Panel\n";
+        cout << "5️⃣  Exit\n";
+        cout << "======================================\n";
 
-    cout << "=== ONLINE SHOP SYSTEM ===\n";
+        int choice = getIntInput("Choose: ", 1, 5);
 
-    while (true) {
-        cout << "\n1. Browse Products\n";
-        cout << "2. View Cart & Checkout\n";
-        cout << "3. View Profile\n";
-        cout << "4. Admin panel\n";
-        cout << "5. Exit\n";
-        cout << "Choose: ";
-        cin >> choice;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-        // ===========================
-        // 1. BROWSE PRODUCTS
-        // ===========================
-       // ===========================
-// 1. BROWSE PRODUCTS
-// ===========================
-        if (choice == 1) {
-            while (true) {
-                cout << "\n=== Products (Sorted by Price from low to high) ===\n";
-                sortAndDisplayByPrice(catalog.getRoot());
-
-                cout << "\n1. Add product to cart by ID\n";
-                cout << "2. Search for product by ID\n";
-                cout << "3. Back\n";
-                cout << "Choose: ";
-
-                int browseChoice;
-                cin >> browseChoice;
-
-                // ---- ADD TO CART ----
-                if (browseChoice == 1) {
-                    int id;
-                    cout << "Enter product ID (0 to cancel): ";
-                    cin >> id;
-
-                    if (id == 0) continue;
-
-                    products* product = catalog.searchProduct(id);
-                    if (!product) {
-                        cout << "❌ Product not found.\n";
-                        continue;
-                    }
-
-                    int qty;
-                    cout << "Enter quantity: ";
-                    cin >> qty;
-
-                    if (qty <= 0 || qty > product->stock) {
-                        cout << "❌ Invalid quantity.\n";
-                        continue;
-                    }
-
-                    for (int i = 0; i < qty; i++) {
-                        cart.pushReturn(product->name, product->price, 1);
-                    }
-
-                    cout << "✓ Added to cart\n";
-                }
-
-                // ---- SEARCH PRODUCT ----
-                // ---- SEARCH PRODUCT BY NAME ----
-                else if (browseChoice == 2) {
-                    cin.ignore();  // clear newline
-                    string name;
-                    cout << "Enter product name to search (or '0' to cancel): ";
-                    getline(cin, name);
-
-                    if (name == "0") continue;
-
-                    products* product = searchProductByName(catalog.getRoot(), name);
-                    if (!product) {
-                        cout << "❌ Product not found.\n";
-                        continue;
-                    }
-
-                    // Show ONLY the searched product
-                    cout << "\n=== Product Found ===\n";
-                    cout << "ID: " << product->id
-                        << "\nName: " << product->name
-                        << "\nCategory: " << product->category
-                        << "\nPrice: " << product->price
-                        << "\nStock: " << product->stock << endl;
-
-                    // Sub-menu
-                    while (true) {
-                        cout << "\n1. Add to cart\n";
-                        cout << "2. Back\n";
-                        cout << "Choose: ";
-
-                        int searchChoice;
-                        cin >> searchChoice;
-
-                        if (searchChoice == 1) {
-                            int qty;
-                            cout << "Enter quantity: ";
-                            cin >> qty;
-
-                            if (qty <= 0 || qty > product->stock) {
-                                cout << "❌ Invalid quantity.\n";
-                                continue;
-                            }
-
-                            for (int i = 0; i < qty; i++) {
-                                cart.pushReturn(product->name, product->price, 1);
-                            }
-
-                            cout << "✓ Added to cart\n";
-                            break;  // go back to browse menu
-                        }
-                        else if (searchChoice == 2) {
-                            break;  // back to browse menu
-                        }
-                        else {
-                            cout << "Invalid choice\n";
-                        }
-                    }
-                }
-
-
-
-                // ---- BACK ----
-                else if (browseChoice == 3) {
-                    break;
-                }
-
-                else {
-                    cout << "Invalid choice\n";
-                }
-            }
-        }
-
-
-        // ===========================
-        // 2. CART & CHECKOUT
-        // ===========================
-        else if (choice == 2) {
-            if (cart.top == -1) {
-                cout << "Cart is empty.\n";
-                continue;
-            }
-
-            cart.displayCart();
-
-            cout << "\n1. Remove last item\n";
-            cout << "2. Checkout\n";
-            cout << "3. Back\n";
-            cout << "Choose: ";
-
-            int cartChoice;
-            cin >> cartChoice;
-
-            if (cartChoice == 1) {
-                cart.processReturn();
-            }
-
-            else if (cartChoice == 2) {
-                if (cart.top == -1) {
-                    cout << "Cart empty. Checkout cancelled.\n";
-                    continue;
-                }
-
-                int id;
-                string name, email, phone, address;
-
-                cout << "Customer ID: ";
-                cin >> id;
-                cin.ignore();
-
-                cout << "Name: ";
-                getline(cin, name);
-                cout << "Email: ";
-                getline(cin, email);
-                cout << "Phone: ";
-                getline(cin, phone);
-                cout << "Address: ";
-                getline(cin, address);
-
-                customers.addCustomer(id, name, email, phone, address);
-
-                double total = cart.calculateTotal();
-
-                Order order(orderCounter++, id, 0, total, "Today");
-                orderHistory.addOrder(order);
-                deliveryQueue.enqueueDelivery(order);
-
-                cout << "✓ Order placed. Total = " << total << " EGP\n";
-            }
-        }
-
-        // ===========================
-        // 3. PROFILE
-        // ===========================
-        else if (choice == 3) {
-            int id;
-            cout << "Customer ID: ";
-            cin >> id;
-
-            customer* c = linearSearchCustomer(customers.getHead(), id);
-            if (!c) {
-                cout << "Customer not found.\n";
-                continue;
-            }
-
-            cout << "\nName: " << c->name
-                 << "\nEmail: " << c->email
-                 << "\nPhone: " << c->phone
-                 << "\nAddress: " << c->address << endl;
-
-            cout << "\nOrder History:\n";
-            orderHistory.viewOrders(id);
-        }
-
-
-
-        // ===========================
-        // 4. ADMIN PAGE
-        // ===========================
-        else if (choice == 4) {
-            int password;
-            cout << "\nEnter admin password: ";
-            cin >> password;
-
-            if (password != 1234) {
-                cout << "❌ Access denied!\n";
-                continue;
-            }
-
-            int adminChoice;
-            while (true) {
-                cout << "\n=== ADMIN PAGE ===\n";
-                cout << "1. Add Product\n";
-                cout << "2. Process Next Delivery\n";
-                cout << "3. Back to Main Menu\n";
-                cout << "Choose: ";
-                cin >> adminChoice;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                // ---- ADD PRODUCT ----
-                if (adminChoice == 1) {
-                    int id, stock;
-                    string name, category;
-                    double price;
-
-                    cout << "Product ID: ";
-                    cin >> id;
-                    cin.ignore();
-
-                    cout << "Name: ";
-                    getline(cin, name);
-
-                    cout << "Category: ";
-                    getline(cin, category);
-
-                    cout << "Price: ";
-                    cin >> price;
-
-                    cout << "Stock: ";
-                    cin >> stock;
-
-                    catalog.addProduct(id, stock, name, category, price);
-                    cout << "✓ Product added successfully\n";
-                }
-
-                // ---- PROCESS DELIVERY ----
-                else if (adminChoice == 2) {
-                    deliveryQueue.dequeueDelivery();
-                }
-
-                // ---- BACK ----
-                else if (adminChoice == 3) {
-                    break;
-                }
-
-                else {
-                    cout << "Invalid choice\n";
-                }
-            }
-        }
-        // ===========================
-        // EXIT
-        // ===========================
-        else if (choice == 5) {
-            cout << "Goodbye!\n";
-            break;
+        switch(choice) {
+            case 1: browseProducts(catalog, cart); break;
+            case 2: viewCartCheckout(cart, customers, orderHistory, deliveryQueue, orderCounter); break;
+            case 3: viewProfile(customers, orderHistory); break;
+            case 4: adminPanel(catalog, deliveryQueue); break;
+            case 5: cout << "Goodbye!\n"; return;
         }
     }
-
-    return 0;
 }
