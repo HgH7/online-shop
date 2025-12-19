@@ -41,6 +41,10 @@ void ProductCatalog::addProduct(int id, int stock, string name, string category,
         parent->right = newNode;
 }
 
+void ProductCatalog::removeProduct(int id)
+{
+}
+
 products* ProductCatalog::searchProduct(int id) {
     products* current = root;
 

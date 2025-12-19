@@ -1,0 +1,13 @@
+# Visual Studio
+.vs/
+
+# Build files
+*.exe
+*.o
+*.obj
+*.out
+CMakeFiles/
+cmake-build-*/
+
+# OS files
+Thumbs.db

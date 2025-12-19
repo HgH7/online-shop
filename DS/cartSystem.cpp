@@ -5,37 +5,50 @@ using namespace std;
 
 ReturnStack::ReturnStack(int size) {
     maxSize = size;
-    items = new string[maxSize];
     top = -1;
+    items = new CartItem[size];
 }
 
-void ReturnStack::pushReturn(string item) {
-    if (top == maxSize - 1) {
-        cout << "Stack is full. Cannot add: " << item << endl;
+void ReturnStack::pushReturn(string itemName, double price, int quantity) {
+    if (top >= maxSize - 1) {
+        cout << "Cart is full!\n";
         return;
     }
-
-    items[++top] = item;
-    cout << "Return item added: " << item << endl;
+    top++;
+    items[top].name = itemName;
+    items[top].price = price;
+    items[top].quantity = quantity;
 }
 
 void ReturnStack::processReturn() {
-    if (top == -1) {
-        cout << "No return items to process." << endl;
+    if (top < 0) {
+        cout << "Cart is empty!\n";
         return;
     }
-
-    string item = items[top--];
-    cout << "Processing return item: " << item << endl;
+    cout << "Removed: " << items[top].name << "\n";
+    top--;
 }
+
 void ReturnStack::displayCart() {
-    if (top == -1) {
-        cout << "Cart is empty.\n";
+    if (top < 0) {
+        cout << "Cart is empty!\n";
         return;
     }
-
-    cout << "\n--- Cart Items ---\n";
-    for (int i = top; i >= 0; i--) {
-        cout << items[i] << endl;
+    cout << "\n=== Your Cart ===\n";
+    for (int i = 0; i <= top; i++) {
+        double itemTotal = items[i].price * items[i].quantity;
+        cout << (i + 1) << ". " << items[i].name
+            << " x " << items[i].quantity
+            << " @ " << items[i].price
+            << " = " << itemTotal << " EGP\n";
     }
+    cout << "\n--- Total: " << calculateTotal() << " EGP ---\n";
+}
+
+double ReturnStack::calculateTotal() {
+    double total = 0;
+    for (int i = 0; i <= top; i++) {
+        total += items[i].price * items[i].quantity;
+    }
+    return total;
 }
