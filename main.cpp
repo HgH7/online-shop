@@ -1,4 +1,7 @@
-﻿#include "./DS/products.h"
+﻿#include <iostream>
+#include <limits>
+
+#include "./DS/products.h"
 #include "./DS/customerAcc.h"
 #include "./DS/cartSystem.h"
 #include "./DS/orderHistory.h"
@@ -10,10 +13,56 @@
 using namespace std;
 
 void seedProducts(ProductCatalog& catalog) {
-    catalog.addProduct(1, 10, "Laptop", "Electronics", 15000);
-    catalog.addProduct(2, 20, "Phone", "Electronics", 8000);
-    catalog.addProduct(3, 15, "Keyboard", "Accessories", 700);
-    catalog.addProduct(4, 30, "Mouse", "Accessories", 450);
+    catalog.addProduct(1, 15, "Laptop", "Electronics", 15000);
+    catalog.addProduct(2, 25, "Phone", "Electronics", 9000);
+    catalog.addProduct(3, 20, "Tablet", "Electronics", 7000);
+    catalog.addProduct(4, 30, "Headphones", "Electronics", 1200);
+    catalog.addProduct(5, 40, "Mouse", "Accessories", 450);
+
+    catalog.addProduct(6, 35, "Keyboard", "Accessories", 700);
+    catalog.addProduct(7, 18, "Monitor", "Electronics", 6000);
+    catalog.addProduct(8, 22, "Printer", "Electronics", 3500);
+    catalog.addProduct(9, 50, "USB", "Accessories", 150);
+    catalog.addProduct(10, 28, "PowerBank", "Electronics", 950);
+
+    catalog.addProduct(11, 14, "Desk", "Furniture", 4200);
+    catalog.addProduct(12, 16, "Chair", "Furniture", 2800);
+    catalog.addProduct(13, 12, "Lamp", "Furniture", 600);
+    catalog.addProduct(14, 10, "Router", "Networking", 1300);
+    catalog.addProduct(15, 20, "SSD", "Storage", 2200);
+
+    catalog.addProduct(16, 18, "HDD", "Storage", 1800);
+    catalog.addProduct(17, 24, "Webcam", "Electronics", 1100);
+    catalog.addProduct(18, 26, "Microphone", "Electronics", 1600);
+    catalog.addProduct(19, 32, "Speakers", "Electronics", 1400);
+    catalog.addProduct(20, 15, "SmartWatch", "Wearables", 5000);
+    catalog.addProduct(21, 12, "Football", "Sports", 400);
+    catalog.addProduct(22, 10, "Tennis Racket", "Sports", 1200);
+    catalog.addProduct(23, 18, "Dumbbells", "Fitness", 900);
+    catalog.addProduct(24, 15, "Yoga Mat", "Fitness", 350);
+
+    catalog.addProduct(25, 20, "Coffee Maker", "Home Appliances", 2800);
+    catalog.addProduct(26, 14, "Blender", "Home Appliances", 1900);
+    catalog.addProduct(27, 16, "Microwave", "Home Appliances", 6500);
+
+    catalog.addProduct(28, 25, "Novel Book", "Books", 250);
+    catalog.addProduct(29, 30, "Notebook", "Stationery", 60);
+    catalog.addProduct(30, 40, "Pen Set", "Stationery", 120);
+
+    catalog.addProduct(31, 22, "Backpack", "Bags", 750);
+    catalog.addProduct(32, 18, "Wallet", "Fashion Accessories", 500);
+    catalog.addProduct(33, 20, "Sunglasses", "Fashion Accessories", 900);
+
+    catalog.addProduct(34, 15, "Perfume", "Beauty", 1600);
+    catalog.addProduct(35, 25, "Hair Dryer", "Beauty Tools", 1100);
+
+    catalog.addProduct(36, 12, "Toy Car", "Toys", 300);
+    catalog.addProduct(37, 10, "Puzzle Game", "Toys", 450);
+
+    catalog.addProduct(38, 14, "Pet Food", "Pet Supplies", 650);
+    catalog.addProduct(39, 8,  "Water Bottle", "Outdoor", 220);
+    catalog.addProduct(40, 6,  "Camping Tent", "Outdoor Gear", 4800);
+
 }
 
 int main() {
@@ -33,155 +82,200 @@ int main() {
     while (true) {
         cout << "\n1. Browse Products\n";
         cout << "2. View Cart & Checkout\n";
-        cout << "3. Remove Last Item from Cart\n";
-        cout << "4. Exit\n";
+        cout << "3. View Profile\n";
+        cout << "4. Admin panel\n";
+        cout << "5. Exit\n";
         cout << "Choose: ";
         cin >> choice;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
+        // ===========================
+        // 1. BROWSE PRODUCTS
+        // ===========================
         if (choice == 1) {
-            cout << "\n=== Products sorted by price ===\n";
+            cout << "\n=== Products (Sorted by Price) ===\n";
             inorderSortByPrice(catalog.getRoot());
 
-            // Now let user select a product
-            cout << "\nEnter product name to add to cart (or '0' to go back): ";
-            string productName;
-            getline(cin, productName);
+            cout << "\nEnter product ID to add to cart (0 to go back): ";
+            int id;
+            cin >> id;
 
-            if (productName != "0") {
-                products* product = nullptr;
+            if (id == 0) continue;
 
-                if (productName == "Laptop" || productName == "laptop") {
-                    product = new products(1, 10, "Laptop", "Electronics", 15000);
-                }
-                else if (productName == "Phone" || productName == "phone") {
-                    product = new products(2, 20, "Phone", "Electronics", 8000);
-                }
-                else if (productName == "Keyboard" || productName == "keyboard") {
-                    product = new products(3, 15, "Keyboard", "Accessories", 700);
-                }
-                else if (productName == "Mouse" || productName == "mouse") {
-                    product = new products(4, 30, "Mouse", "Accessories", 450);
-                }
-
-                if (product != nullptr) {
-                    cout << "Enter quantity: ";
-                    int quantity;
-                    cin >> quantity;
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-                    if (quantity > 0 && quantity <= product->stock) {
-                        // Add to cart
-                        cart.pushReturn(product->name,product->price,quantity);
-                        cout << "Added " << quantity << " x " << product->name
-                            << " (Price: " << product->price << " each)"
-                            << " to cart!\n";
-                    }
-                    else {
-                        cout << "Invalid quantity or insufficient stock!\n";
-                    }
-
-                    delete product; // Clean up memory
-                }
-                else {
-                    cout << "Product not found!\n";
-                }
+            products* product = catalog.searchProduct(id);
+            if (!product) {
+                cout << "Product not found.\n";
+                continue;
             }
+
+            cout << "Enter quantity: ";
+            int qty;
+            cin >> qty;
+
+            if (qty <= 0 || qty > product->stock) {
+                cout << "Invalid quantity.\n";
+                continue;
+            }
+
+            for (int i = 0; i < qty; i++) {
+                cart.pushReturn(product->name, product->price, 1);
+            }
+
+            cout << "✓ Added to cart\n";
         }
 
+        // ===========================
+        // 2. CART & CHECKOUT
+        // ===========================
         else if (choice == 2) {
+            if (cart.top == -1) {
+                cout << "Cart is empty.\n";
+                continue;
+            }
+
             cart.displayCart();
 
-            // Ask if user wants to checkout
-            cout << "\nDo you want to checkout? (y/n): ";
-            char checkoutChoice;
-            cin >> checkoutChoice;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "\n1. Remove last item\n";
+            cout << "2. Checkout\n";
+            cout << "3. Back\n";
+            cout << "Choose: ";
 
-            if (checkoutChoice == 'y' || checkoutChoice == 'Y') {
+            int cartChoice;
+            cin >> cartChoice;
+
+            if (cartChoice == 1) {
+                cart.processReturn();
+            }
+
+            else if (cartChoice == 2) {
+                if (cart.top == -1) {
+                    cout << "Cart empty. Checkout cancelled.\n";
+                    continue;
+                }
+
                 int id;
                 string name, email, phone, address;
 
-                cout << "\n=== Checkout ===\n";
                 cout << "Customer ID: ";
                 cin >> id;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.ignore();
 
                 cout << "Name: ";
                 getline(cin, name);
-
                 cout << "Email: ";
                 getline(cin, email);
-
                 cout << "Phone: ";
                 getline(cin, phone);
-
                 cout << "Address: ";
                 getline(cin, address);
 
                 customers.addCustomer(id, name, email, phone, address);
 
-                // Calculate total based on cart items
-                // You'll need to implement a method to get cart total
-                // For now, let's manually calculate based on what we know
-
-                cout << "\nCalculating total...\n";
-                cout << "Enter the total from your cart display above: ";
-                double total;
-                cin >> total;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                double total = cart.calculateTotal();
 
                 Order order(orderCounter++, id, 0, total, "Today");
                 orderHistory.addOrder(order);
                 deliveryQueue.enqueueDelivery(order);
 
-                cout << "\n✓ Order placed successfully!\n";
-                cout << "Total Amount: " << total << " EGP\n";
-            }
-            else {
-                cout << "Returning to main menu...\n";
+                cout << "✓ Order placed. Total = " << total << " EGP\n";
             }
         }
 
+        // ===========================
+        // 3. PROFILE
+        // ===========================
         else if (choice == 3) {
-            cart.processReturn();
-        }
-
-        else if (choice == 4) {
             int id;
-            string name, email, phone, address;
-
-            cout << "\nCustomer ID: ";
+            cout << "Customer ID: ";
             cin >> id;
-            cout << "Name: ";
-            cin >> name;
-            cout << "Email: ";
-            cin >> email;
-            cout << "Phone: ";
-            cin >> phone;
-            cout << "Address: ";
-            cin >> address;
 
-            customers.addCustomer(id, name, email, phone, address);
+            customer* c = linearSearchCustomer(customers.getHead(), id);
+            if (!c) {
+                cout << "Customer not found.\n";
+                continue;
+            }
 
-            double total;
-            cout << "Enter total amount: ";
-            cin >> total;
+            cout << "\nName: " << c->name
+                 << "\nEmail: " << c->email
+                 << "\nPhone: " << c->phone
+                 << "\nAddress: " << c->address << endl;
 
-            Order order(orderCounter++, id, 0, total, "Today");
-            orderHistory.addOrder(order);
-            deliveryQueue.enqueueDelivery(order);
-
-            cout << "Order placed successfully\n";
+            cout << "\nOrder History:\n";
+            orderHistory.viewOrders(id);
         }
 
+
+
+        // ===========================
+        // 4. ADMIN PAGE
+        // ===========================
+        else if (choice == 4) {
+            int password;
+            cout << "\nEnter admin password: ";
+            cin >> password;
+
+            if (password != 1234) {
+                cout << "❌ Access denied!\n";
+                continue;
+            }
+
+            int adminChoice;
+            while (true) {
+                cout << "\n=== ADMIN PAGE ===\n";
+                cout << "1. Add Product\n";
+                cout << "2. Process Next Delivery\n";
+                cout << "3. Back to Main Menu\n";
+                cout << "Choose: ";
+                cin >> adminChoice;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                // ---- ADD PRODUCT ----
+                if (adminChoice == 1) {
+                    int id, stock;
+                    string name, category;
+                    double price;
+
+                    cout << "Product ID: ";
+                    cin >> id;
+                    cin.ignore();
+
+                    cout << "Name: ";
+                    getline(cin, name);
+
+                    cout << "Category: ";
+                    getline(cin, category);
+
+                    cout << "Price: ";
+                    cin >> price;
+
+                    cout << "Stock: ";
+                    cin >> stock;
+
+                    catalog.addProduct(id, stock, name, category, price);
+                    cout << "✓ Product added successfully\n";
+                }
+
+                // ---- PROCESS DELIVERY ----
+                else if (adminChoice == 2) {
+                    deliveryQueue.dequeueDelivery();
+                }
+
+                // ---- BACK ----
+                else if (adminChoice == 3) {
+                    break;
+                }
+
+                else {
+                    cout << "Invalid choice\n";
+                }
+            }
+        }
+        // ===========================
+        // EXIT
+        // ===========================
         else if (choice == 5) {
             cout << "Goodbye!\n";
             break;
-        }
-
-        else {
-            cout << "Invalid choice\n";
         }
     }
 
