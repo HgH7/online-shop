@@ -233,38 +233,72 @@ void browseProducts(ProductCatalog& catalog, ReturnStack& cart) {
 // ==========================
 // VIEW CART & CHECKOUT
 // ==========================
-void viewCartCheckout(ReturnStack& cart, CustomerList& customers, OrderHistory& orderHistory, DeliveryQueue& deliveryQueue, int& orderCounter) {
-    if(cart.top == -1) {
-        cout << "🛒 Cart is empty.\n";
+void viewCartCheckout(
+    ReturnStack& cart,
+    CustomerList& customers,
+    OrderHistory& orderHistory,
+    DeliveryQueue& deliveryQueue,
+    int& orderCounter
+) {
+    if (cart.top == -1) {
+        cout << "\n🛒 Cart is empty.\n";
         return;
     }
 
     cout << "\n🛒 ===== YOUR CART ===== 🛒\n";
     cart.displayCart();
+
     cout << "\n1️⃣  Remove last item\n2️⃣  Checkout\n3️⃣  Back\n";
 
     int cartChoice = getIntInput("Choose: ", 1, 3);
-    if(cartChoice == 1) cart.processReturn();
-    else if(cartChoice == 2) {
-        if(cart.top == -1) { cout << "Cart empty. Checkout cancelled.\n"; return; }
 
-        int id = getIntInput("Customer ID: ");
-        string name = getStringInput("Name: ");
-        string email = getStringInput("Email: ");
-        string phone = getStringInput("Phone: ");
-        string address = getStringInput("Address: ");
+    if (cartChoice == 1) {
+        cart.processReturn();
+        return;
+    }
+
+    if (cartChoice == 3) {
+        return;
+    }
+
+    // ======================
+    // CHECKOUT
+    // ======================
+    if (cart.top == -1) {
+        cout << "Cart empty. Checkout cancelled.\n";
+        return;
+    }
+
+    int id = getIntInput("Customer ID: ");
+
+    customer* existingCustomer = linearSearchCustomer(customers.getHead(), id);
+
+    string name, email, phone, address;
+
+    if (existingCustomer == nullptr) {
+        cout << "\n🆕 New customer detected\n";
+        name = getStringInput("Name: ");
+        email = getStringInput("Email: ");
+        phone = getStringInput("Phone: ");
+        address = getStringInput("Address: ");
 
         customers.addCustomer(id, name, email, phone, address);
-
-        double total = cart.calculateTotal();
-
-        Order order(orderCounter++, id, 0, total, "Today");
-        orderHistory.addOrder(order);
-        deliveryQueue.enqueueDelivery(order);
-
-        cout << "✅ Order placed. Total = " << total << " EGP\n";
+    } else {
+        cout << "\n👋 Welcome back, " << existingCustomer->name << "!\n";
     }
+
+    double total = cart.calculateTotal();
+
+    Order order(orderCounter++, id, 0, total, "Today");
+    orderHistory.addOrder(order);
+    deliveryQueue.enqueueDelivery(order);
+
+    cart.clearCart();
+
+    cout << "\n✅ Order placed successfully!\n";
+    cout << "💰 Total: " << total << " EGP\n";
 }
+
 
 // ==========================
 // VIEW PROFILE

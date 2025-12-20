@@ -19,6 +19,7 @@ public:
     void pushReturn(string itemName, double price, int quantity);  // Updated signature
     void processReturn();
     void displayCart();
-    double calculateTotal();  // New method to calculate total
+    double calculateTotal();
+    void clearCart();// New method to calculate total
 };
 #endif

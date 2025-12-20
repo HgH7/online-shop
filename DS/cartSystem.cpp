@@ -52,3 +52,7 @@ double ReturnStack::calculateTotal() {
     }
     return total;
 }
+
+void ReturnStack::clearCart() {
+    top = -1;
+}
